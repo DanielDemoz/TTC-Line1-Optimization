@@ -1,4 +1,5 @@
-![Project Banner](TTC_optimization.png)
+![Project Banner](TTC%20optimization%20.png)
+
 
 
 # TTC Line 1 — Delay Reduction & Scheduling Optimization
