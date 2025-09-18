@@ -1,4 +1,4 @@
-![Project Banner]([TTC optimization .png](https://github.com/DanDemoz/TTC-Line1-Optimization/blob/main/TTC%20optimization%20.png))
+![Project Banner](TTC_optimization.png)
 
 
 # TTC Line 1 — Delay Reduction & Scheduling Optimization
