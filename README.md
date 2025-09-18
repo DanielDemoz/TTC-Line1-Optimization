@@ -52,6 +52,9 @@ Objective: balance cost vs. risk exposure.
 
 Constraints: fleet size (65 trains), passenger capacity, delay threshold (≤ 3 min).
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yourusername/TTC-Line1-Optimization/blob/main/notebooks/analysis.ipynb)
+
+
 Evaluation of Strategies
 
 Option 1 (Min Freq): Cheapest but highest delays.
