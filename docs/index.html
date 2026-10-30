@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TTC Line 1 Scheduling | Optimization case study | Daniel S. Demoz</title>
+  <meta name="description" content="Can Line 1 trains be scheduled to match hourly delay risk at lower cost? A linear programming study on 2024 TTC delay data, with its assumptions shown.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.danieldemoz.com/kit/rai.css">
+</head>
+<body>
+  <div class="rai-top"><div class="wrap">
+    <span>Daniel S. Demoz · Responsible AI in practice</span>
+    <span><a href="https://www.danieldemoz.com/projects">All projects</a> &nbsp;·&nbsp; <a href="https://github.com/DanielDemoz/TTC-Line1-Optimization">Code</a></span>
+  </div></div>
+
+  <header class="rai-hero"><div class="wrap">
+    <p class="eyebrow">TTC Line 1 scheduling</p>
+    <h1>Can Line 1 service follow delay risk, and what would it save?</h1>
+    <p class="lead">A linear programming study on 2024 TTC Line 1 delay records. It compares three scheduling strategies against running the maximum service all day, and shows the assumptions each number depends on.</p>
+    <div class="chips">
+      <span class="chip status">Optimization study</span>
+      <span class="chip">2024 Line 1 data</span>
+      <span class="chip">Assumptions shown</span>
+      <span class="chip">City of Toronto Open Data</span>
+    </div>
+  </div></header>
+
+  <nav class="steps" aria-label="Sections"><div class="wrap">
+    <a href="#question"><b>1</b>The question</a>
+    <a href="#results"><b>2</b>Results</a>
+    <a href="#assumptions"><b>3</b>Assumptions</a>
+    <a href="#framework"><b>4</b>Reliable AI checklist</a>
+  </div></nav>
+
+  <main>
+    <section id="question"><div class="wrap">
+      <h2>The question</h2>
+      <p class="sub">Line 1 delays cluster at certain hours. Can trains be scheduled so that busy, high-risk hours get the most service, at a lower cost than running every hour at the maximum?</p>
+      <div class="grid g2" style="margin-top:18px"><div class="card"><h3>Data</h3><p>14,142 Line 1 delay records from 2024, City of Toronto Open Data. Five delay causes (disorderly patrons, passenger alarms, and others) are weighted into an hourly "risk pressure" score.</p></div><div class="card"><h3>Method</h3><p>Linear programming (PuLP) chooses trains per hour (tph) between 25 and 35, from 6 am to midnight, under a fleet limit. Three objectives are compared against running 35 tph all day.</p></div></div>
+      <div class="card" style="margin-top:18px"><img src="delay_by_hour.png" alt="Total Line 1 delay minutes by hour, 2024" style="width:100%;height:auto;border-radius:8px"></div>
+    </div></section>
+    <section id="results" style="background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+      <h2>Results</h2>
+      <p class="sub">One service day, 6 am to midnight.</p>
+      <div class="card" style="margin-top:18px;overflow-x:auto"><table class="t"><tr><th>Strategy</th><th>Frequency</th><th>Train-hours</th><th>Cost</th><th>Saved vs baseline</th><th>Modelled avg delay (min)</th></tr><tr><td>Baseline: maximum frequency all day</td><td>35 tph every hour</td><td>630</td><td>$166,950</td><td>—</td><td>3.00</td></tr><tr><td>Option 1: lowest cost</td><td>25 tph every hour</td><td>450</td><td>$119,250</td><td>$47,700</td><td>4.20</td></tr><tr class="hl"><td>Option 2: risk-weighted (chosen)</td><td>30 to 35 tph, more in high-risk hours</td><td>605</td><td>$160,325</td><td>$6,625</td><td>3.14</td></tr><tr><td>Option 3: highest minimum</td><td>35 tph every hour</td><td>630</td><td>$166,950</td><td>$0</td><td>3.00</td></tr></table></div>
+      <div class="note warn"><b>Honest reading:</b> the chosen option does not reduce delay compared with running the maximum service. Its modelled average delay (3.14 min) is slightly higher than the baseline (3.00 min). What it does is keep high-risk hours at full service while saving about $6,600 a day elsewhere. Option 1 saves far more but raises modelled delay in every hour.</div>
+      <div class="card" style="margin-top:18px"><img src="option2.png" alt="Option 2 frequency against hourly risk pressure" style="width:100%;height:auto;border-radius:8px"></div>
+    </div></section>
+    <section id="assumptions"><div class="wrap">
+      <h2>Assumptions behind the numbers</h2>
+      <p class="sub">Every figure above depends on these. They are modelling choices, not measurements.</p>
+      <div class="grid g2" style="margin-top:18px"><div class="card"><h3>Modelling assumptions</h3><ul style="margin:0;padding-left:18px"><li>Delay per hour is assumed to be 105 divided by trains per hour (3.0 minutes at 35 tph, 4.2 at 25 tph). It was not fitted to the data.</li><li>Cost is about $265 per train-hour, a planning assumption.</li><li>Risk weights for the five causes (1.1 to 1.5) were set by judgment.</li><li>Frequencies can be any value between 25 and 35, so real timetables would need rounding.</li></ul></div><div class="card"><h3>Before any real use</h3><ul style="margin:0;padding-left:18px"><li>Fit the delay-versus-frequency relationship to real operating data.</li><li>Use TTC cost figures, crew rules and fleet availability.</li><li>Test the schedule in simulation before any change to service.</li><li>Check effects on riders who travel at low-risk hours, so savings do not fall on one group.</li></ul></div></div>
+    </div></section>
+    <section id="framework" style="background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+      <h2>Reliable AI checklist</h2>
+      <p class="sub">The six questions of the <a href="https://www.danieldemoz.com/#method">Reliable AI Adoption Framework</a>, answered for this project.</p>
+      <div class="fw" style="margin-top:18px">
+        <div class="card"><h3>Business problem</h3><p>Put scarce train service where delay risk is highest, and know what it costs.</p></div>
+        <div class="card"><h3>Data readiness</h3><p>2024 Line 1 delay records, City of Toronto Open Data. Counts of incidents, not measured travel times.</p></div>
+        <div class="card"><h3>Governance and risk</h3><p>Service cuts affect riders. Any saving must be weighed against who waits longer, and when.</p></div>
+        <div class="card"><h3>Technology and tools</h3><p>Linear programming makes the trade-off explicit and repeatable. No black box.</p></div>
+        <div class="card"><h3>People and adoption</h3><p>Planners choose between options. The model shows the cost and the modelled delay of each.</p></div>
+        <div class="card"><h3>Outcomes and monitoring</h3><p>After any change, compare real delays by hour with the modelled values, and revisit the assumptions.</p></div>
+      </div>
+    </div></section>
+
+  </main>
+
+  <footer class="rai-foot"><div class="wrap">
+    <span>Built by Daniel S. Demoz · <a href="https://www.danieldemoz.com">danieldemoz.com</a></span>
+    <span>Data: City of Toronto Open Data, TTC Subway Delay Data 2024 · Open Government Licence – Toronto</span>
+  </div></footer>
+
+</body>
+</html>

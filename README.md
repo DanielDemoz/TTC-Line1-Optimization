@@ -1,42 +1,57 @@
-# TTC Line 1 — Delay Reduction & Scheduling Optimization
+# TTC Line 1 Scheduling Optimization
 
-Risk-aware scheduling framework for Toronto's Line 1 (Yonge–University) subway that combines delay forecasting with MILP-based train frequency optimization.
+Can Line 1 (Yonge–University) trains be scheduled to follow hourly delay risk, and what would that save?
 
-> **Topic:** `toronto-transit` — Toronto Transit Commission (TTC) analytics series.
+**Case study page:** https://danieldemoz.github.io/TTC-Line1-Optimization/
+**Status:** completed study in a Jupyter notebook. A planning exercise, not a TTC schedule.
 
-Part of a Toronto transit analytics series: [ttc-predict](https://github.com/DanielDemoz/ttc-predict) | [TTC-Line1-Optimization](https://github.com/DanielDemoz/TTC-Line1-Optimization) | [toronto-transit-sentiment-nlp](https://github.com/DanielDemoz/toronto-transit-sentiment-nlp) | [interactive-transit-dashboard](https://github.com/DanielDemoz/interactive-transit-dashboard)
-
-## Problem
-
-Line 1 is the TTC's busiest corridor, but passenger-related delays (overcrowding, alarm misuse, track entry) reduce reliability and increase operational cost.
+Part of a Toronto transit series: [ttc-predict](https://github.com/DanielDemoz/ttc-predict) | [TTC-Line1-Optimization](https://github.com/DanielDemoz/TTC-Line1-Optimization) | [toronto-transit-sentiment-nlp](https://github.com/DanielDemoz/toronto-transit-sentiment-nlp) | [interactive-transit-dashboard](https://github.com/DanielDemoz/interactive-transit-dashboard)
 
 ## Approach
 
-Analyzed historical delay data from City of Toronto Open Data, forecast hourly disruption risk with Facebook Prophet, and optimized train frequency using mixed-integer linear programming (PuLP). Compared three scheduling strategies, selecting Modified Option 2 as the best cost–reliability balance.
+- 14,142 Line 1 delay records from 2024 (City of Toronto Open Data), in `Data/`.
+- Five delay causes are weighted into an hourly "risk pressure" score.
+- Linear programming (PuLP) chooses trains per hour (25 to 35) from 6 am to midnight, under a fleet limit.
+- Three strategies are compared with running 35 trains per hour all day.
 
-## Results
+## Results (one service day)
 
-| Strategy | Avg Delay (min) | Daily Savings |
-|----------|-----------------|---------------|
-| Option 1 – Min Freq | 4.20 | $47.7k |
-| Modified Option 2 | 3.14 | $6.6k |
-| Option 3 – Max-Min | 3.00 | $0 |
+| Strategy | Train-hours | Cost | Saved | Modelled avg delay (min) |
+|---|---|---|---|---|
+| Baseline: 35 tph all day | 630 | $166,950 | – | 3.00 |
+| Option 1: lowest cost | 450 | $119,250 | $47,700 | 4.20 |
+| **Option 2: risk-weighted (chosen)** | **605** | **$160,325** | **$6,625** | **3.14** |
+| Option 3: highest minimum | 630 | $166,950 | $0 | 3.00 |
 
-Modified Option 2 reduced average peak-hour delay to 3.14 minutes while saving approximately $6,600 per day versus baseline scheduling.
+**Honest reading:** Option 2 does not lower delay compared with maximum service. It keeps high-risk hours at full service and saves about $6,600 a day in quieter hours, for a small rise in modelled delay.
 
-## Tech stack
+## Assumptions
 
-Python, Facebook Prophet, PuLP, pandas, Jupyter notebooks
+- Delay per hour = 105 / trains per hour. This is assumed, not fitted to the data.
+- Cost is about $265 per train-hour.
+- Risk weights for the five causes (1.1 to 1.5) were set by judgment.
+
+## Responsible AI, following the Reliable AI Adoption Framework
+
+1. **Business problem:** put scarce train service where delay risk is highest, and know what it costs.
+2. **Data readiness:** 2024 Line 1 delay records, City of Toronto Open Data. Incident counts, not measured travel times.
+3. **Governance and risk:** service cuts affect riders. Savings must be weighed against who waits longer, and when.
+4. **Technology and tools:** linear programming makes the trade-off explicit and repeatable.
+5. **People and adoption:** planners choose between options. The model shows the cost and modelled delay of each.
+6. **Outcomes and monitoring:** after any change, compare real delays by hour with the modelled values and revisit the assumptions.
 
 ## How to run
 
-**Recommended (Google Colab):** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/DanielDemoz/TTC-Line1-Optimization/blob/main/notebooks/Final_Analysis_TTC_line_1%20%281%29.ipynb)
+Open the notebook in Google Colab or Jupyter, install `requirements.txt`, and point the data path at the CSV in `Data/`.
 
-1. Download the [TTC subway delay dataset](https://open.toronto.ca/dataset/ttc-subway-delay-data/) and upload to `/data/`.
-2. Run all cells in the notebook.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/DanielDemoz/TTC-Line1-Optimization/blob/main/notebooks/Final_Analysis_TTC_line_1%20%281%29.ipynb)
 
-**Local:** clone the repo, install `requirements.txt`, place the CSV in `data/`, then run `src/forecasting.py` and `src/optimization.py`.
+Slides: `report/TTC Line 1 Optimization PPT.pptx`. Charts: `results/`.
 
-## Screenshot / demo
+## Project history
 
-See `report/final_report.pdf` and notebook outputs for forecast charts and optimized schedules. Project banner: `TTC optimization .png`.
+The earlier README said the project forecast risk with Prophet and "reduced" delay to 3.14 minutes, and it pointed to scripts and a PDF that are not in the repository. The notebook does not use Prophet, and 3.14 minutes is slightly above the 3.00-minute baseline. The README was corrected in October 2026.
+
+## Tech stack
+
+Python, pandas, PuLP, matplotlib, Jupyter.
